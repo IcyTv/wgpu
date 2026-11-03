@@ -6,6 +6,9 @@ use core::any::Any;
 use ash::{khr, vk};
 use parking_lot::{Mutex, MutexGuard};
 
+#[path = "creation.rs"]
+mod creation;
+
 use crate::vulkan::{
     conv, map_host_device_oom_and_lost_err,
     semaphore_list::SemaphoreType,
@@ -213,7 +216,17 @@ impl Surface for NativeSurface {
 
         let result = {
             profiling::scope!("vkCreateSwapchainKHR");
-            unsafe { functor.create_swapchain(&info, None) }
+            creation::create_swapchain_with_status(
+                old_swapchain == vk::SwapchainKHR::null(),
+                |raw| unsafe {
+                    (functor.fp().create_swapchain_khr)(
+                        device.shared.raw.handle(),
+                        &info,
+                        core::ptr::null(),
+                        raw,
+                    )
+                },
+            )
         };
 
         // doing this before bailing out with error

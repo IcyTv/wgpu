@@ -42,6 +42,13 @@ Bottom level categories:
 
 ## Unreleased
 
+### Bug Fixes (that don't change API)
+
+#### Vulkan
+
+- Bound retries for initial swapchain creation when NVIDIA/Wayland returns
+  `SUBOPTIMAL_KHR` without a handle, avoiding spurious device loss during popup mapping.
+
 ## v29.0.4 (2026-07-01)
 
 ### New Features
